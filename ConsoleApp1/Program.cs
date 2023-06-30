@@ -74,6 +74,7 @@ namespace ConsoleApp1
             if (mahasiswas.Count == 0)
             {
                 Console.WriteLine("Data mahasiswa  kosong");
+                backToMenu();
                 return;
             }
             Console.WriteLine("Data Mahasiswa Kampus GuestPro");
