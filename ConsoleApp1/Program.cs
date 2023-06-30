@@ -1,15 +1,23 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+
 namespace ConsoleApp1
 {
     class Program
     {
         private static List<Mahasiswa> mahasiswas = new List<Mahasiswa>();
+        private static HttpClient _httpClient = new HttpClient();
 
         static void Main(string[] args)
         {
-            mahasiswas.Add(new Mahasiswa( "220030400", "Turbowisesa", "Br. Banda", "Sistem Informasi")); 
+            _httpClient.BaseAddress = new Uri("https://62959458810c00c1cb635575.mockapi.io/api/");
+            // Console.WriteLine(response.Result); 
+            // Console.ReadLine();
             menu();
         }
 
@@ -45,7 +53,6 @@ namespace ConsoleApp1
                     break;
                 case 1:
                     mahasiswaList();
-                    backToMenu();
                     break;
                 case 2:
                     addMahasiswa();
@@ -59,9 +66,11 @@ namespace ConsoleApp1
             }
         }
 
-        static void mahasiswaList()
+        static void  mahasiswaList(bool showOnly = false)
         {
             Console.Clear();
+            Task<List<Mahasiswa>?> response = _httpClient.GetFromJsonAsync<List<Mahasiswa>>("mahasiswa");
+            mahasiswas = response.Result;
             if (mahasiswas.Count == 0)
             {
                 Console.WriteLine("Data mahasiswa  kosong");
@@ -72,7 +81,13 @@ namespace ConsoleApp1
             Console.WriteLine("ID\t| Nama\t\t\t| NIM\t\t| Prodi\t\t\t| Alamat\t|");
             for (int i=0;i<mahasiswas.Count;i++)
             {
-                Console.WriteLine($" {i+1}\t| {mahasiswas[i].name}\t\t| {mahasiswas[i].nim}\t| {mahasiswas[i].prodi}\t| {mahasiswas[i].address}\t|");
+                Console.WriteLine($" {mahasiswas[i].Id}\t| {mahasiswas[i].Name}\t\t| {mahasiswas[i].Nim}   \t| {mahasiswas[i].Prodi}\t| {mahasiswas[i].Address}\t|");
+            }
+
+            if (showOnly == false)
+            {
+                backToMenu();
+
             }
         }
 
@@ -90,15 +105,19 @@ namespace ConsoleApp1
             Console.Write("Alamat: ");
             String address = Console.ReadLine();
 
-            mahasiswas.Add(new Mahasiswa(nim, name, address, prodi));
+            string data = JsonConvert.SerializeObject(new Mahasiswa(nim, name, address, prodi));
+            var content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
+            // Console.WriteLine(data);
+            var response = _httpClient.PostAsync("mahasiswa", content);
             divider();
-            Console.WriteLine("Berhasil menambahkan data mahasiswa baru");
+            
+            Console.WriteLine($"Berhasil menambahkan data mahasiswa baru: ");
             backToMenu();
         }
 
         static void editMahasiswa(bool error = false, int id=0)
         {
-            mahasiswaList();
+            mahasiswaList(true);
             divider();
             if (mahasiswas.Count == 0)
             {
@@ -116,7 +135,7 @@ namespace ConsoleApp1
                 Console.Clear();
                 menu();
             }
-            else if (mahasiswas.Count >= id)
+            else if (mahasiswas.Find(x => x.Id == id) != null)
             {
                 divider();
                 Console.Write("Nama: ");
@@ -128,10 +147,21 @@ namespace ConsoleApp1
                 Console.Write("Alamat: ");
                 String address = Console.ReadLine();
 
-                mahasiswas[id - 1] = new Mahasiswa(nim, name, address, prodi);
-                divider();
-                Console.WriteLine("Berhasil mengubah data mahasiswa");
-                backToMenu();   
+                try
+                {
+                    string data = JsonConvert.SerializeObject(new Mahasiswa(nim, name, address, prodi));
+                    var content = new StringContent(data, Encoding.UTF8, "application/json");
+                    var response = _httpClient.PutAsync($"mahasiswa/{id}", content);
+                    divider();
+                    Console.WriteLine("Berhasil mengubah data mahasiswa");
+                    backToMenu();
+                }
+                catch (Exception e)
+                {
+                    divider();
+                    Console.WriteLine($"Gagal mengubah data mahasiswa: {e}");
+                    backToMenu();
+                }
             }
             else
             {
@@ -142,7 +172,7 @@ namespace ConsoleApp1
 
         static void deleteMahasiswa(bool error = false, int id = 0)
         {
-            mahasiswaList();
+            mahasiswaList(true);
             divider();
             if (mahasiswas.Count == 0)
             {
@@ -160,12 +190,23 @@ namespace ConsoleApp1
                 Console.Clear();
                 menu();
             }
-            else if (mahasiswas.Count >= id)
+            else if (mahasiswas.Find(x => x.Id == id) != null)
             {
-                mahasiswas.RemoveAt(id-1);
-                divider();
-                Console.WriteLine("Berhasil menghapus data mahasiswa");
-                backToMenu();    
+                try
+                {
+                    var response =  _httpClient.DeleteAsync($"mahasiswa/{id}");
+
+                    divider();
+                    Console.WriteLine("Berhasil menghapus data mahasiswa");
+                    backToMenu();
+                }
+                catch (Exception e)
+                {
+                    divider();
+                    Console.WriteLine($"Gagal menghapus data mahasiswa: {e.Message}");
+                    backToMenu();
+                }
+                    
             }
             else
             {

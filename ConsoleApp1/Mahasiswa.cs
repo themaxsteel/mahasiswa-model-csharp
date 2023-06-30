@@ -1,19 +1,28 @@
-﻿using System.Globalization;
+﻿using Newtonsoft.Json;
 
 namespace ConsoleApp1;
-
 public class Mahasiswa
 {
-    public string nim;
-    public string name;
-    public string address;
-    public string prodi;
+    [JsonProperty("nim")]
+    public string Nim { get; set; }
 
+    [JsonProperty("name")]
+    public string Name { get; set; }
+
+    [JsonProperty("address")]
+    public string Address { get; set; }
+
+    [JsonProperty("prodi")]
+    public string Prodi { get; set; }
+
+    [JsonProperty("id")]
+    public long Id { get; set; }
+    
     public Mahasiswa(string nim, string name, string address, string prodi)
     {
-        this.nim = nim;
-        this.name = name;
-        this.address = address;
-        this.prodi = prodi;
+        this.Nim = nim;
+        this.Name = name;
+        this.Address = address;
+        this.Prodi = prodi;
     }
 }

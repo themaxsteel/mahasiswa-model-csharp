@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "TdYNzEmu74Oqf0nTdK+KN023BJl4/f32ZJcOEatVQjnv4XPcekVr1B+qp16JsqjfkOBXsQfLCfJvxnF/FMo7Rg==",
+  "dgSpecHash": "QaaGdMFQd86vk9WJsbnXaN/Aie1WVRN4Fos+JGeLiSGMOjFX81NX0Qmpr5Wb3RUukdDLsLQH9DoH4IpUAJHgug==",
   "success": true,
   "projectFilePath": "C:\\Users\\Turbo\\RiderProjects\\ConsoleApp1\\ConsoleApp1\\ConsoleApp1.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Turbo\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
   "logs": []
 }
